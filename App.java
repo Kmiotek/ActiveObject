@@ -1,7 +1,8 @@
+import activeObject.Proxy;
 import activeObject.Scheduler;
 
 public class App {
     public static void main(String[] args) {
-        Scheduler scheduler = new Scheduler();
+        Proxy proxy = new Proxy();
     }
 }

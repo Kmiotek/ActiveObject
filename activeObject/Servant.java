@@ -1,6 +1,12 @@
 package activeObject;
 // Buffer
 public class Servant {
-    public void put() {};
-    public int get() {return 0;};
+
+
+    protected int getNumberOfFreeFields(){
+        return 0;
+    }
+    protected int getNumberOfOccupiedFields(){return 0;}
+    public void put( int value ) {};
+    public int get( int value ) {return 0;};
 }

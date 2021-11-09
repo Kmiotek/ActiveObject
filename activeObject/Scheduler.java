@@ -3,15 +3,14 @@ package activeObject;
 public class Scheduler extends Thread{
 
     private final Servant servant;
-    private final Proxy proxy;
+
     private final ActivationQueue queue;
 
-    public Scheduler(){
+    public Scheduler(Servant servant, ActivationQueue queue){
         super();
 
-        this.servant = new Servant();
-        this.proxy = new Proxy();
-        this.queue = new ActivationQueue();
+       this.servant = servant;
+       this.queue = queue;
 
     }
 

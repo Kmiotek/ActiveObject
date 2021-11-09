@@ -1,6 +1,11 @@
 package activeObject;
 
-public class Future {
-    public boolean isAvailable(){return  true;};
-    public int get(){return 1;};
+public class Future<T> {
+
+    protected T value;
+    protected boolean isAvailable;
+
+    public boolean isAvailable(){return  this.isAvailable;}
+    public T get(){return this.value;}
+
 }
