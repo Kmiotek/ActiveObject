@@ -23,6 +23,7 @@ public class ActivationQueue {
     }
 
     void enqueue(IMethodRequest methodRequest){
+        lock.lock();
         if (methodRequest.isConsumer()){
             consumers.offer(methodRequest);
             bothEmpty.signal();
@@ -32,6 +33,7 @@ public class ActivationQueue {
             bothEmpty.signal();
             producersEmpty.signal();
         }
+        lock.unlock();
     }
 
     IMethodRequest dequeue() throws  InterruptedException{
