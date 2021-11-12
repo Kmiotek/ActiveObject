@@ -37,26 +37,31 @@ public class ActivationQueue {
     IMethodRequest dequeue() throws  InterruptedException{
         lock.lock();
 
-        IMethodRequest result;
+        IMethodRequest result = null;
 
-        while (isSomeoneWaiting){
-            someoneWaiting.await();
+        try {
+            while (isSomeoneWaiting) {
+                someoneWaiting.await();
+            }
+
+            isSomeoneWaiting = true;
+
+            while (producers.isEmpty() && consumers.isEmpty()) {
+                bothEmpty.await();
+            }
+
+            if (!consumers.isEmpty()) {
+                result = dequeueWithFirstNotEmpty(consumers, producers, producersEmpty);
+            } else {
+                result = dequeueWithFirstNotEmpty(producers, consumers, consumersEmpty);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            isSomeoneWaiting = false;
+            someoneWaiting.signal();
+            lock.unlock();
         }
-
-        isSomeoneWaiting = true;
-
-        while (producers.isEmpty() && consumers.isEmpty()){
-            bothEmpty.await();
-        }
-
-        if (!consumers.isEmpty()){
-            result = dequeueWithFirstNotEmpty(consumers, producers, producersEmpty);
-        } else {
-            result = dequeueWithFirstNotEmpty(producers, consumers, consumersEmpty);
-        }
-        isSomeoneWaiting = false;
-        someoneWaiting.signal();
-        lock.unlock();
         return result;
     }
 
