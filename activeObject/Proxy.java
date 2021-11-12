@@ -13,33 +13,25 @@ public class Proxy {
         this.servant = new Servant();
         this.queue = new ActivationQueue();
         this.scheduler = new Scheduler(servant, queue);
-
+        this.scheduler.start();
     }
 
 
-    Future put( int value ){
+    Future<Void> put( int value ){
 
-        Future response = new Future<Integer>();
-        MethodRequest newRequest
-                = new MethodRequest<Integer , Void >(
-                        ( Integer v ) -> {  this.servant.put(v); return null;},
-                        (Void) -> { return  this.servant.getNumberOfFreeFields() >= value; },
-                    value, response);
-
+        Future<Void> response = new <Void>Future();
+        IMethodRequest newRequest = new RequestPut(response,value,this.servant);
         this.queue.enqueue(newRequest);
         return response;
 
     }
 
-    Future get( int value ){
+    Future<Integer> get( int value ){
 
-        Future response = new Future<Integer>();
-        MethodRequest newRequest
-                = new MethodRequest<Integer , Integer >(
-                ( Integer v ) -> {  return this.servant.get(v);},
-                (Void) -> { return  this.servant.getNumberOfOccupiedFields() >= value; },
-                value, response);
-
+        Future<Integer> response = new <Integer>Future();
+        IMethodRequest newRequest = new RequestGet(response,value,this.servant);
         this.queue.enqueue(newRequest);
-        return response;}
+        return response;
+
+    }
 }

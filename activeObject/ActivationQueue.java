@@ -1,9 +1,10 @@
 package activeObject;
 
 public class ActivationQueue {
-    void enqueue( MethodRequest methodRequest){}
-    MethodRequest dequeue() throws  InterruptedException{
+    void enqueue( IMethodRequest methodRequest){}
+    IMethodRequest dequeue() throws  InterruptedException{
         wait(10);
-        return new MethodRequest();}
+        return null;
+    }
 
 }

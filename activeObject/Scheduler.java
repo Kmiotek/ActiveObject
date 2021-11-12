@@ -22,7 +22,7 @@ public class Scheduler extends Thread{
         while(!shouldStop){
             try{
 
-                MethodRequest request = this.queue.dequeue();
+                IMethodRequest request = this.queue.dequeue();
                 if(request.guard()) request.call();
                 else this.queue.enqueue(request);
 
