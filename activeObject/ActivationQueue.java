@@ -11,9 +11,6 @@ public class ActivationQueue {
     private final Condition bothEmpty = lock.newCondition();
     private final Condition consumersEmpty = lock.newCondition();
     private final Condition producersEmpty = lock.newCondition();
-    private final Condition someoneWaiting = lock.newCondition();
-
-    private boolean isSomeoneWaiting = false;
 
     private final Queue<IMethodRequest> consumers = new LinkedBlockingQueue<>();
     private final Queue<IMethodRequest> producers = new LinkedBlockingQueue<>();
@@ -24,7 +21,6 @@ public class ActivationQueue {
 
     void enqueue(IMethodRequest methodRequest){
         lock.lock();
-
         if (methodRequest.isConsumer()){
             consumers.offer(methodRequest);
             bothEmpty.signal();
@@ -40,26 +36,24 @@ public class ActivationQueue {
     IMethodRequest dequeue() throws  InterruptedException{
         lock.lock();
 
-        IMethodRequest result;
+        IMethodRequest result = null;
 
-        while (isSomeoneWaiting){
-            someoneWaiting.await();
+        try {
+
+            while (producers.isEmpty() && consumers.isEmpty()) {
+                bothEmpty.await();
+            }
+
+            if (!consumers.isEmpty()) {
+                result = dequeueWithFirstNotEmpty(consumers, producers, producersEmpty);
+            } else {
+                result = dequeueWithFirstNotEmpty(producers, consumers, consumersEmpty);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
         }
-
-        isSomeoneWaiting = true;
-
-        while (producers.isEmpty() && consumers.isEmpty()){
-            bothEmpty.await();
-        }
-
-        if (!consumers.isEmpty()){
-            result = dequeueWithFirstNotEmpty(consumers, producers, producersEmpty);
-        } else {
-            result = dequeueWithFirstNotEmpty(producers, consumers, consumersEmpty);
-        }
-        isSomeoneWaiting = false;
-        someoneWaiting.signal();
-        lock.unlock();
         return result;
     }
 
