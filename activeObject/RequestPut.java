@@ -24,4 +24,9 @@ public class RequestPut implements IMethodRequest{
             return true;
         return false;
     }
+
+    @Override
+    public boolean isConsumer() {
+        return false;
+    }
 }

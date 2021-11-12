@@ -25,4 +25,9 @@ public class RequestGet implements IMethodRequest{
             return true;
         return false;
     }
+
+    @Override
+    public boolean isConsumer() {
+        return true;
+    }
 }
