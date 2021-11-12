@@ -11,9 +11,6 @@ public class ActivationQueue {
     private final Condition bothEmpty = lock.newCondition();
     private final Condition consumersEmpty = lock.newCondition();
     private final Condition producersEmpty = lock.newCondition();
-    private final Condition someoneWaiting = lock.newCondition();
-
-    private boolean isSomeoneWaiting = false;
 
     private final Queue<IMethodRequest> consumers = new LinkedBlockingQueue<>();
     private final Queue<IMethodRequest> producers = new LinkedBlockingQueue<>();
@@ -42,11 +39,6 @@ public class ActivationQueue {
         IMethodRequest result = null;
 
         try {
-            while (isSomeoneWaiting) {
-                someoneWaiting.await();
-            }
-
-            isSomeoneWaiting = true;
 
             while (producers.isEmpty() && consumers.isEmpty()) {
                 bothEmpty.await();
@@ -60,8 +52,6 @@ public class ActivationQueue {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            isSomeoneWaiting = false;
-            someoneWaiting.signal();
             lock.unlock();
         }
         return result;
