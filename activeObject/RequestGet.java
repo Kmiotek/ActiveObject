@@ -15,13 +15,12 @@ public class RequestGet implements IMethodRequest{
     @Override
     public void call() {
         Integer result = this.servant.get(parameter);
-        this.future.value = result;
-        this.future.isAvailable = true;
+        this.future.setData(result);
     }
 
     @Override
     public boolean guard() {
-        if(this.servant.getNumberOfFreeFields() >= this.parameter)
+        if(this.servant.getNumberOfOccupiedFields() >= this.parameter)
             return true;
         return false;
     }

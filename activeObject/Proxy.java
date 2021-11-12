@@ -1,6 +1,6 @@
 package activeObject;
 
-public class Proxy {
+public class Proxy{
 
 
 
@@ -17,7 +17,7 @@ public class Proxy {
     }
 
 
-    Future<Void> put( int value ){
+    public Future<Void> put( int value ){
 
         Future<Void> response = new <Void>Future();
         IMethodRequest newRequest = new RequestPut(response,value,this.servant);
@@ -26,7 +26,7 @@ public class Proxy {
 
     }
 
-    Future<Integer> get( int value ){
+    public Future<Integer> get( int value ){
 
         Future<Integer> response = new <Integer>Future();
         IMethodRequest newRequest = new RequestGet(response,value,this.servant);

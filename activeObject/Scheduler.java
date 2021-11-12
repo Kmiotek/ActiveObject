@@ -18,11 +18,13 @@ public class Scheduler extends Thread{
     public void run() {
         boolean shouldStop = false;
 
-
+        System.out.println("Scheduler start");
         while(!shouldStop){
             try{
-
+                System.out.println("Scheduler try get Task");
                 IMethodRequest request = this.queue.dequeue();
+                System.out.println("Scheduler  get Task!!!");
+                System.out.println(request.guard());
                 if(request.guard()) request.call();
                 else this.queue.enqueue(request);
 

@@ -15,7 +15,7 @@ public class RequestPut implements IMethodRequest{
     @Override
     public void call() {
         this.servant.put(parameter);
-        this.future.isAvailable = true;
+        this.future.setData(null);
     }
 
     @Override
