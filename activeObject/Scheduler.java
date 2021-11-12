@@ -28,6 +28,13 @@ public class Scheduler extends Thread{
                 if(request.guard()) request.call();
                 else this.queue.enqueue(request);
 
+                try {
+
+                    Thread.sleep(10000);
+                }catch (InterruptedException e){;
+                    break;
+                }
+
             }catch(InterruptedException e){
                shouldStop = true;
             }
