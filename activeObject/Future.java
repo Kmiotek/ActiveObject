@@ -25,12 +25,11 @@ public class Future<T> {
         return  result;
     }
 
-    public T get(){
+    public T get() throws InterruptedException{
         lock.lock();
         try{
             if(!this.isAvailable)
                 dataIsAvailable.await();
-        }catch(InterruptedException e){
 
         }finally{
             lock.unlock();

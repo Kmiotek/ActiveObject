@@ -1,71 +1,101 @@
 package activeObject;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ActivationQueue {
 
     private final ReentrantLock lock = new ReentrantLock(true);
-    private final Condition bothEmpty = lock.newCondition();
-    private final Condition consumersEmpty = lock.newCondition();
-    private final Condition producersEmpty = lock.newCondition();
+    private final Condition dataEntered = lock.newCondition();
 
-    private final Queue<IMethodRequest> consumers = new LinkedBlockingQueue<>();
-    private final Queue<IMethodRequest> producers = new LinkedBlockingQueue<>();
+    private boolean wasGetRequestReturned = false;
+    private boolean wasPutRequestReturned = false;
+    private Integer iter = 0;
+
+    private final Deque<RequestGet> getRequests = new LinkedList<>();
+    private final Deque<RequestPut> putRequests = new LinkedList<>();
+
 
     public ActivationQueue() {
-
     }
 
     void enqueue(IMethodRequest methodRequest){
         lock.lock();
-        if (methodRequest.isConsumer()){
-            consumers.offer(methodRequest);
-            bothEmpty.signal();
-            consumersEmpty.signal();
-        } else {
-            producers.offer(methodRequest);
-            bothEmpty.signal();
-            producersEmpty.signal();
+        if(methodRequest instanceof RequestGet) {
+            getRequests.add((RequestGet) methodRequest);
+            if( !wasGetRequestReturned) dataEntered.signal();
+        }
+
+        if(methodRequest instanceof RequestPut) {
+            putRequests.add((RequestPut) methodRequest);
+            if( !wasPutRequestReturned) dataEntered.signal();
         }
         lock.unlock();
     }
 
     IMethodRequest dequeue() throws  InterruptedException{
         lock.lock();
-
         IMethodRequest result = null;
 
-        try {
+        while(true){
+            for(int i = 0 ; i < 2 ; i++){
+               // System.out.println("Iter:" + iter);
+                if(iter == 0){
+                    if(getRequests.size() > 0 && !wasGetRequestReturned ){
+                        result = getRequests.poll();
+                        //System.out.println("Get");
+                        iter+=1;
+                        iter%=2;
+                        break;
+                    }
 
-            while (producers.isEmpty() && consumers.isEmpty()) {
-                bothEmpty.await();
+                }else {
+                    if(putRequests.size() > 0 && !wasPutRequestReturned ){
+                        result = putRequests.poll();
+                        //System.out.println("Put");
+                        iter+=1;
+                        iter%=2;
+                        break;
+                    }
+                }
+
+                iter+=1;
+                iter%=2;
+            }
+            if(result == null) {
+               // System.out.println("Im waiting");
+                dataEntered.await();
+            }else{
+                break;
             }
 
-            if (!consumers.isEmpty()) {
-                result = dequeueWithFirstNotEmpty(consumers, producers, producersEmpty);
-            } else {
-                result = dequeueWithFirstNotEmpty(producers, consumers, consumersEmpty);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
         }
+
+
+        wasGetRequestReturned = false;
+        wasPutRequestReturned = false;
+
+        lock.unlock();
         return result;
     }
 
-    private IMethodRequest dequeueWithFirstNotEmpty(Queue<IMethodRequest> queue1, Queue<IMethodRequest> queue2, Condition condition) throws InterruptedException {
-        if (queue1.peek().guard()){
-            return queue1.poll();
-        } else {
-            while (queue2.isEmpty()){
-                condition.await();
-            }
-            return queue2.poll();
+    void refund( IMethodRequest methodRequest){
+        lock.lock();
+        //System.out.println("Refund");
+        if(methodRequest instanceof RequestGet) {
+            getRequests.addFirst((RequestGet) methodRequest);
+            wasGetRequestReturned = true;
         }
+
+        if(methodRequest instanceof RequestPut) {
+            putRequests.addFirst((RequestPut) methodRequest);
+            wasPutRequestReturned = true;
+
+        }
+        lock.unlock();
     }
 
 }
