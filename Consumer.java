@@ -76,7 +76,7 @@ public class Consumer extends Thread{
                 else future = asyncBuffer.get(this.consumerId, this.portion );
 
                 for(int i =0 ; i < this.offsideJobIterations;i++){
-                    tmp += Math.sin(tmp);
+                    tmp += Math.sin(tmp + 123);
                 }
 
                 if(!this.bufferIsSync && future != null) future.get();
