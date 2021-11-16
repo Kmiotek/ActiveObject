@@ -43,7 +43,7 @@ public class ThreadStatisticCollector {
     @Override
     public String toString() {
         final AtomicReference<String> output = new AtomicReference<>();
-        output.set(" " + this.totalActions + "\t| " + this.totalWaits + "\t| "+ ((double)this.totalActions/(double)this.totalWaits) + "\tWaits per action \n");
+        output.set(" " + this.totalActions + "\t| " + this.totalWaits + "\t| "+ ((double)this.totalWaits/(double)this.totalActions) + "\tWaits per action \n");
         output.set( output.get() + "-----------------------------------------------------------------------------------------\n");
         this.threads.forEach( (key,value) -> {
             output.set( output.get() + key + "\t:" + value + "\n");

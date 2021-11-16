@@ -31,4 +31,9 @@ public class RequestGet implements IMethodRequest{
         return false;
     }
 
+    @Override
+    public boolean isConsumer() {
+        return true;
+    }
+
 }

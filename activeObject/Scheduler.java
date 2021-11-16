@@ -1,9 +1,7 @@
 package activeObject;
 
 
-// Scheduler wywołuje zapytania dodawane do kolejki przez Proxy. Przez konstrukcje kolejki po pobraniu musi sprawdzić
-// czy może wykonać dane zapytanie, ponieważ kolejka nie sprawdza czy zapytanie może zostać obsłużone. Jeśli nie może
-// zapytania obsłużyć zwraca je z powrotem do kolejki
+// Scheduler wywołuje zapytania dodawane do kolejki przez Proxy.
 
 public class Scheduler extends Thread{
 
@@ -34,15 +32,7 @@ public class Scheduler extends Thread{
                 IMethodRequest request = this.queue.dequeue();
               //  System.out.println("Scheduler  get Task!!!");
 
-                try{
-                    if (this.delay > 0)
-                    Thread.sleep(this.delay);
-                }catch (InterruptedException e){
-                    System.out.println(e);
-                }
-
-                if(request.guard()) request.call();
-                else this.queue.refund(request);
+                request.call();         // Nie sprawdzamy czy możemy wykonać request bo kolejka nam to gwarantuje.
 
             }catch(InterruptedException e){//System.out.println("Get interrupt");
              //   System.out.println("Get InterruptedException");

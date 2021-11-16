@@ -22,8 +22,7 @@ public class Future<T> {
     }
 
     public boolean isAvailable(){
-        boolean result  = this.isAvailable;
-        return  result;
+        return this.isAvailable;
     }
 
     public T get() throws InterruptedException{
