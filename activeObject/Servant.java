@@ -21,19 +21,15 @@ public class Servant {
     }
 
     public void put( int value ) {
-
         for(int i  = 0 ; i < value;i++){
             data.add(1);
         }
-
-        //System.out.println("Buffer contain: " + this.getNumberOfOccupiedFields());
-    };
+    }
 
     public int get( int value ) {
         for(int i  = 0 ; i < value;i++){
             data.remove(0);
         }
-       // System.out.println("Buffer contain: " + this.getNumberOfOccupiedFields());
         return value;
     };
 }

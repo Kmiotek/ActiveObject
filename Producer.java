@@ -60,7 +60,6 @@ public class Producer extends Thread{
 
     @Override
     public void interrupt() {
-        //System.out.println("Interupted Producer");
         super.interrupt();
         this.shouldStop = true;
     }
@@ -72,8 +71,6 @@ public class Producer extends Thread{
         while(!this.shouldStop) {
             if (this.randomPortion)
                 this.portion = this.random.nextInt(100) + 1;
-
-            //    System.out.println("( P:" + this.producerId + " ) Wait for add " + this.portion);
             try {
                 if (this.bufferIsSync) this.buffer.put(this.producerId, portion);
                 else future = asyncBuffer.put(this.producerId, this.portion);
@@ -82,11 +79,8 @@ public class Producer extends Thread{
                     tmp += Math.sin(tmp);
                 }
 
-
                 if (!this.bufferIsSync) future.get();
-                //     System.out.println("( P:" + this.producerId + " ) Just add " + this.portion);
             } catch (Exception e) {
-                ;
                 break;
             }
 

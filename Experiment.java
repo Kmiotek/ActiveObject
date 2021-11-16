@@ -9,9 +9,9 @@ public class Experiment {
     public static void main(String[] args) {
         CSVGenerator csv = new CSVGenerator();
         csv.setHeader(Arrays.asList("Buffer Type", "Consumers Number" , "Producers Number","Total threads number","offside operations number","Total Operation Number"));
-        for(int k = 15 ; k <= 50 ; k+=150){
-            for(int p = 15 ; p <= 50 ; p+=150){
-                for(int c = 0 ; c <= 2000000 ; c+= 500000)
+        for(int k = 50 ; k <= 50 ; k+=150){
+            for(int p = 50 ; p <= 50 ; p+=150){
+                for(int c = 50000 ; c <= 2000000 ; c+= 500000)
                 for(int i = 0 ; i < 5 ; i+=1){
                     System.out.println(k+"|" +p+"|" +c+"|" +i);
                     ExperimentStep step = new ExperimentStep(k,p,200,c, true);
@@ -24,8 +24,8 @@ public class Experiment {
             }
         }
 
-        for(int k = 15 ; k <= 50 ; k+=150){
-            for(int p = 15 ; p <= 50 ; p+=150){
+        for(int k = 50 ; k <= 50 ; k+=150){
+            for(int p = 50 ; p <= 50 ; p+=150){
                 for(int c = 0 ; c <= 2000000 ; c+= 500000)
                     for(int i = 0 ; i < 5 ; i+=1){
                     System.out.println(k+"|" +p+"|" +c+"|" +i);

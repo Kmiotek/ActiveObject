@@ -67,11 +67,7 @@ public class Consumer extends Thread{
 
             if(this.randomPortion)
                 this.portion = this.random.nextInt(100) + 1;
-
-           // System.out.println("( C:" + this.consumerId + " ) Wait for get " + this.portion);
-
             try {
-                //System.out.println("A");
                 if(this.bufferIsSync) this.buffer.get(this.consumerId,this.portion);
                 else future = asyncBuffer.get(this.consumerId, this.portion );
 
@@ -80,9 +76,7 @@ public class Consumer extends Thread{
                 }
 
                 if(!this.bufferIsSync && future != null) future.get();
-              //  System.out.println("( C:" + this.consumerId + " ) Just got " + this.portion);
             }catch (Exception e){;
-                //System.out.println("Catch eception");
                 break;
             }
         }

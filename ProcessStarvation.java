@@ -4,7 +4,7 @@ import basic.ThreadStatisticCollector;
 import java.util.LinkedList;
 import java.util.List;
 
-public class App {
+public class ProcessStarvation {
 
     private static final int P = 3;
     private static final int K = 1;
@@ -14,19 +14,18 @@ public class App {
 
     public static void main(String[] args) {
 
-        Proxy buffer =  new Proxy(200);
+        Proxy buffer =  new Proxy(200, 10);
         List<Thread> workers = new LinkedList();
 
-        workers.add(new Producer(buffer, 0,1));
-        workers.add(new Producer(buffer, 0,1));
-        workers.add(new Consumer(buffer, 0,1));
-        workers.add(new Consumer(buffer, 0,1));
-        workers.add(new Consumer(buffer, 0,1));
-        workers.add(new Consumer(buffer, 0,1));
-        workers.add(new Consumer(buffer, 0,10));
+        workers.add(new Producer(buffer, 1,1));
+        workers.add(new Producer(buffer, 2,1));
+        workers.add(new Consumer(buffer, 3,1));
+        workers.add(new Consumer(buffer, 4,1));
+        workers.add(new Consumer(buffer, 5,1));
+        workers.add(new Consumer(buffer, 6,1));
+        workers.add(new Consumer(buffer, 7,10));
 
         workers.forEach(Thread::start);
-
         try
         {
             Thread.sleep(10000);
@@ -49,12 +48,6 @@ public class App {
 
 
         System.out.println(ThreadStatisticCollector.instance);
-
-//        for(int i = 0 ; i < P ;i++)
-//            workers.add(new Producer(buffer, i));
-//        for(int i = 0 ; i < K ;i++)
-//            workers.add(new Consumer(buffer, i + 10000));
-
 
     }
 }
