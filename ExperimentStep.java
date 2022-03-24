@@ -13,21 +13,21 @@ public class ExperimentStep {
     private List<Thread> workers;
     private ThreadStatisticCollector statistic;
 
-    public ExperimentStep(int K, int P, int M , int C, boolean syncBuffer){
+    public ExperimentStep(int producers, int consumers, int buff, int iterations, boolean syncBuffer){
         this.workers = new LinkedList<>();
        if(syncBuffer) {
-           IBuffer buffer = new Buffer3Lock(M);
-           for(int i = 0 ; i < K ;i++)
-               workers.add(new Producer(buffer, i, C));
-           for(int i = 0 ; i < P ;i++)
-               workers.add(new Consumer(buffer, i, C));
+           IBuffer buffer = new Buffer3Lock(buff);
+           for(int i = 0 ; i < producers ;i++)
+               workers.add(new Producer(buffer, i, iterations));
+           for(int i = 0 ; i < consumers ;i++)
+               workers.add(new Consumer(buffer, i, iterations, statistic));
        }
        else{
-           IAsyncBuffer buffer = new Proxy(M);
-           for(int i = 0 ; i < K ;i++)
-               workers.add(new Producer(buffer, i, C));
-           for(int i = 0 ; i < P ;i++)
-               workers.add(new Consumer(buffer, i, C));
+           IAsyncBuffer buffer = new Proxy(buff);
+           for(int i = 0 ; i < producers ;i++)
+               workers.add(new Producer(buffer, i, iterations));
+           for(int i = 0 ; i < consumers ;i++)
+               workers.add(new Consumer(buffer, i, iterations, statistic));
         }
 
     }
@@ -37,7 +37,7 @@ public class ExperimentStep {
 
         try
         {
-            Thread.sleep(5000);
+            Thread.sleep(500);
         }
         catch(InterruptedException ex)
         {

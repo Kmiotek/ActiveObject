@@ -2,37 +2,40 @@ import basic.CSVGenerator;
 import basic.ThreadStatisticCollector;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 public class Experiment {
     public static void main(String[] args) {
         CSVGenerator csv = new CSVGenerator();
-        csv.setHeader(Arrays.asList("Buffer Type", "Consumers Number" , "Producers Number","Total threads number","offside operations number","Total Operation Number"));
-        for(int k = 50 ; k <= 50 ; k+=150){
-            for(int p = 50 ; p <= 50 ; p+=150){
-                for(int c = 50000 ; c <= 2000000 ; c+= 500000)
-                for(int i = 0 ; i < 5 ; i+=1){
-                    System.out.println(k+"|" +p+"|" +c+"|" +i);
-                    ExperimentStep step = new ExperimentStep(k,p,200,c, true);
+        csv.setHeader(Arrays.asList("Buffer Type", "Consumers Number" , "Producers Number","Total threads number",
+                "offside operations number","Total Operation Number","Total waits number"));
+        for(int k = 25 ; k <= 40 ; k+=5){
+            for(int c = 4000000 ; c <= 20000000 ; c+= 200000000) {
+                for (int i = 0; i < 10; i += 1) {
+                    System.out.println("3L"+ k + "|" + k + "|" + c + "|" + i);
+                    ExperimentStep step = new ExperimentStep(k, k, 200, c, true);
                     step.start();
                     int totalOperationNumber = ThreadStatisticCollector.instance.getTotalActions();
-                    csv.addRow(Arrays.asList("3 Lock Buffer",  String.valueOf( k),  String.valueOf( p),String.valueOf( k + p),String.valueOf( c),  String.valueOf( totalOperationNumber)));
+                    int totalWaitsNumber = ThreadStatisticCollector.instance.getTotalWaits();
+                    csv.addRow(Arrays.asList("3 Lock Buffer", String.valueOf(k), String.valueOf(k),
+                            String.valueOf(k + k), String.valueOf(c), String.valueOf(totalOperationNumber),
+                            String.valueOf(totalWaitsNumber)));
                     ThreadStatisticCollector.instance.clear();
 
                 }
             }
         }
 
-        for(int k = 50 ; k <= 50 ; k+=150){
-            for(int p = 50 ; p <= 50 ; p+=150){
-                for(int c = 0 ; c <= 2000000 ; c+= 500000)
-                    for(int i = 0 ; i < 5 ; i+=1){
-                    System.out.println(k+"|" +p+"|" +c+"|" +i);
-                    ExperimentStep step = new ExperimentStep(k,p,200,c, false);
+        for(int k = 5 ; k <= 40 ; k+=5){
+            for(int c = 4000000 ; c <= 10000000 ; c+= 25000000){
+                for(int i = 0 ; i < 10 ; i+=1){
+                    System.out.println("A" +k+"|" +k+"|" +c+"|" +i);
+                    ExperimentStep step = new ExperimentStep(k,k,200,c, false);
                     step.start();
                     int totalOperationNumber = ThreadStatisticCollector.instance.getTotalActions();
-                    csv.addRow(Arrays.asList("Active Objectr",  String.valueOf( k),  String.valueOf( p),String.valueOf( k + p),String.valueOf( c),  String.valueOf( totalOperationNumber)));
+                    int totalWaitsNumber = ThreadStatisticCollector.instance.getTotalWaits();
+                    csv.addRow(Arrays.asList("Active Object",  String.valueOf(k),  String.valueOf(k),
+                            String.valueOf( k + k),String.valueOf( c),  String.valueOf( totalOperationNumber),
+                            String.valueOf( totalWaitsNumber)));
                     ThreadStatisticCollector.instance.clear();
 
                 }
@@ -40,9 +43,10 @@ public class Experiment {
         }
 
         try{
-            csv.saveToFile("test.csv");
-        }catch(Exception e){
+            csv.saveToFile("testnumbers2.csv");
 
+        }catch(Exception e){
+            e.printStackTrace();
         }
         System.out.println("Ende");
         return;

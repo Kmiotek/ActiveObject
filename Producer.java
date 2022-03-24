@@ -8,7 +8,7 @@ import java.util.Random;
 public class Producer extends Thread{
     private IAsyncBuffer asyncBuffer;
     private IBuffer buffer;
-    private boolean bufferIsSync;
+    private final boolean bufferIsSync;
     private int offsideJobIterations = 100;
 
     private static int counter=20000;
@@ -67,7 +67,7 @@ public class Producer extends Thread{
     @Override
     public void run() {
         Future future = null;
-        Double tmp = 10d;
+        Double tmp = 11.0 + producerId;
         while(!this.shouldStop) {
             if (this.randomPortion)
                 this.portion = this.random.nextInt(100) + 1;
@@ -77,7 +77,13 @@ public class Producer extends Thread{
 
                 for (int i = 0; i < this.offsideJobIterations; i++) {
                     tmp += Math.sin(tmp);
+                    if (this.isInterrupted()){
+                        shouldStop = true;
+                        break;
+                    }
                 }
+
+
 
                 if (!this.bufferIsSync) future.get();
             } catch (Exception e) {
@@ -85,6 +91,6 @@ public class Producer extends Thread{
             }
 
         }
-        System.out.println(tmp);
+        //System.out.println(tmp);
     }
 }

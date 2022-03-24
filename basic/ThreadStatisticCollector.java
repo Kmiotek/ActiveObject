@@ -12,7 +12,7 @@ public class ThreadStatisticCollector {
 
     public static  final ThreadStatisticCollector instance = new ThreadStatisticCollector();
 
-    public void noteWait(int id){
+    synchronized public void noteWait(int id){
         this.totalWaits++;
         if(!threads.containsKey(id)){
             threads.put(id,new ThreadStat());
@@ -23,13 +23,15 @@ public class ThreadStatisticCollector {
     public Integer getTotalActions() {
         return totalActions;
     }
+
+    public Integer getTotalWaits() { return totalWaits;}
     public void clear(){
         totalActions =0;
         totalWaits = 0;
         this.threads = new HashMap<>();
     }
 
-    public void noteAction(int id){
+    synchronized public void noteAction(int id){
 
         this.totalActions++;
 
